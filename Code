@@ -70,3 +70,11 @@ export default function WordGuessGame() {
     </div>
   );
 }
+
+// Archivo de configuración para Vercel
+export const config = {
+  runtime: "edge",
+  routes: [
+    { src: "/(.*)", dest: "/index.html" }
+  ]
+};
