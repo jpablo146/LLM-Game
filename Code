@@ -1,0 +1,72 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+const texts = [
+  {
+    title: "Ensayo sobre la ceguera",
+    words: ["El", "hombre", "parpadeó", "desconcertado", "ante", "la", "luz", "roja"]
+  },
+  {
+    title: "El mercader de libros",
+    words: ["La", "noche", "era", "fría", "y", "oscura", "cuando", "llegó"]
+  }
+];
+
+export default function WordGuessGame() {
+  const [currentText, setCurrentText] = useState(texts[Math.floor(Math.random() * texts.length)]);
+  const [userWords, setUserWords] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [score, setScore] = useState(0);
+
+  const handleInput = () => {
+    if (userWords.length >= 50) return;
+
+    const correctWord = currentText.words[userWords.length + 1];
+    const isCorrect = inputValue.trim().toLowerCase() === correctWord.toLowerCase();
+    setUserWords([...userWords, { word: inputValue, correct: isCorrect }]);
+    setInputValue("");
+
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
+    }
+  };
+
+  const accuracy = userWords.length > 0 ? (score / userWords.length) * 100 : 0;
+
+  return (
+    <div className="flex flex-col items-center p-4">
+      <h1 className="text-2xl font-bold">Juego de Predicción de Palabras</h1>
+      <Card className="w-full max-w-md mt-4 p-4">
+        <CardContent>
+          <p className="text-lg font-semibold">{currentText.title}</p>
+          <div className="mt-2">
+            <span className="font-bold">{currentText.words[0]}</span>
+            {userWords.map((entry, index) => (
+              <span
+                key={index}
+                className={`ml-2 font-bold ${entry.correct ? "text-green-600" : "text-red-600"}`}
+              >
+                {entry.word}
+              </span>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="mt-4 flex gap-2">
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Escribe la siguiente palabra"
+        />
+        <Button onClick={handleInput} disabled={userWords.length >= 50}>
+          Enviar
+        </Button>
+      </div>
+
+      <p className="mt-4 text-lg">Puntuación: {accuracy.toFixed(2)}%</p>
+    </div>
+  );
+}
